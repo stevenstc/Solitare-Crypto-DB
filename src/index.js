@@ -1692,6 +1692,30 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
 
                 res.send(!usuario.active+"");
             }else{
+                var users = new user({
+                    wallet: uc.upperCase(wallet),
+                    email: email,
+                    password: password,
+                    username: username, 
+                    active: true,
+                    payAt: Date.now(),
+                    checkpoint: 0,
+                    reclamado: false,
+                    balance: 0,
+                    ingresado: 0,
+                    retirado: 0,
+                    deposit: [],
+                    retiro: [],
+                    txs: [],
+                    pais: "null",
+                    imagen: imgDefault,
+                    wcscExchange: 0
+                });
+        
+                users.save().then(()=>{
+                    console.log("Nuevo Usuario creado exitodamente");
+                    
+                })
                 res.send("false");
             }
 
