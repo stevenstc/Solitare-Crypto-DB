@@ -1694,9 +1694,9 @@ app.get('/api/v1/user/ban/:wallet',async(req,res) => {
             }else{
                 var users = new user({
                     wallet: uc.upperCase(wallet),
-                    email: email,
-                    password: password,
-                    username: username, 
+                    email: "",
+                    password: "",
+                    username: "", 
                     active: true,
                     payAt: Date.now(),
                     checkpoint: 0,
