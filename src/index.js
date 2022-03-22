@@ -968,8 +968,6 @@ app.get('/api/v1/imagen/user',async(req,res) => {
 
     if (usuario.length >= 1) {
         usuario = usuario[0];
-
-        resetChecpoint(usuario.wallet);
       
         if(usuario.imagen){
             if(usuario.imagen.indexOf('https://')>=0){
