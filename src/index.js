@@ -589,13 +589,13 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     balance = new BigNumber(usuario.balance);
     balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(0).toNumber();
+    balance = balance.decimalPlaces(8).toNumber();
 
     var gases = await web3.eth.getGasPrice(); 
 
     var paso = true;
 
-    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins, wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins.toString(), wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
 
     if(balance - coins.shiftedBy(-18).toNumber() >= 0 ){
         await contractMarket.methods
@@ -611,8 +611,8 @@ async function monedasAlJuego(coins,wallet,intentos){
                         var datos = usuario[0];
                         delete datos._id;
                         if(datos.active){
-                            datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(0).toNumber();
-                            datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(0).toNumber();
+                            datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(8).toNumber();
+                            datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(8).toNumber();
                             datos.deposit.push({
                                 amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
                                 date: Date.now(),
