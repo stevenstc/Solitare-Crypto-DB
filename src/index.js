@@ -344,7 +344,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 
         if (usuario.length >= 1) {
             usuario = usuario[0];
-            res.send(usuario.balance+"");
+            res.send((usuario.balance+"").replace(".", ","));
 
         }else{
             console.log("creado USUARIO al consultar monedas: "+wallet)
