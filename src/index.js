@@ -387,7 +387,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.coins = parseInt(req.body.coins);
+    req.body.coins = parseFloat(req.body.coins);
     
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet) && req.body.coins <= 180){
 
@@ -474,7 +474,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
 
-    req.body.coins = parseInt(req.body.coins);
+    req.body.coins = parseFloat(req.body.coins);
 
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
