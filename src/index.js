@@ -1211,8 +1211,8 @@ app.get('/api/v1/email/disponible/',async(req,res) => {
     usuario = await user.find({ email: email });
 
     if (usuario.length >= 1) {
-        //res.send("false");
-        res.send("true");
+        res.send("false");
+        //res.send("true");
     }else{
         res.send("true");
     }
