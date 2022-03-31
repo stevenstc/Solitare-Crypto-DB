@@ -10,7 +10,6 @@ const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
 const abiMarket = require("./abiMarket.js");
-const abiToken = require("./abitoken.js");
 
 //console.log(("HolA Que Haze").toUpperCase())
 //console.log(("HolA Que Haze").toLowerCase())
@@ -42,21 +41,21 @@ const TOKEN2 = process.env.APP_TOKEN2;
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
 
-const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 7;
+const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 1;
 
-const quitarLegandarios = process.env.APP_QUIT_LEGENDARIOS || "false";
-const quitarEpicos = process.env.APP_QUIT_EPICOS || "true";
-const quitarComunes = process.env.APP_QUIT_COMUNES || "true";
-
-const testNet = false; //quita todos los equipos y formaciones comprados deja solo los equpos testnet
+const testNet = process.env.APP_TESTNET || "false";
 
 const COMISION = process.env.APP_COMISION || 60000;
 
-const explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
+var explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
+var RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
 
-const RED = process.env.APP_RED || "https://bsc-dataseed.binance.org/";
+if(testNet === "true" ){
+    explorador = process.env.APP_EXPLORER || "https://testnet.bscscan.com/";
+    RED = process.env.APP_RED || "https://data-seed-prebsc-1-s1.binance.org:8545/";
+}
+
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
-const addressContractToken = process.env.APP_CONTRACTTOKEN || "0xF0fB4a5ACf1B1126A991ee189408b112028D7A63";
 
 const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
 
@@ -64,7 +63,6 @@ let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
 
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
-const contractToken = new web3.eth.Contract(abiToken,addressContractToken);
 
 web3.eth.accounts.wallet.add(PEKEY);
 
@@ -103,131 +101,6 @@ app.get('/api/v1/date',async(req,res) => {
     res.send(parseInt(Date.now()/1000)+"");
 });
 
-
-app.get('/api/v1/user/teams/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    var result = await contractMarket.methods
-        .largoInventario(wallet)
-        .call({ from: cuenta.address })
-        .catch(err => {console.log(err); return 0})
-
-    console.log(result);
-  
-    var inventario = [];
-
-    var cantidad = 43;
-
-    for (let index = 0; index < cantidad; index++) {
-        inventario[index] = 0;
-    }
-        
-    if (!testNet) {
-        for (let index = 0; index < result; index++) {
-
-            var item = await contractMarket.methods
-            .inventario(wallet, index)
-            .call({ from: cuenta.address })
-            .catch(err => {console.log(err); return {nombre: "ninguno"}})
-
-    
-            if(item.nombre.indexOf("t") === 0){
-    
-                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("t")+1,item.nombre.indexOf("-")))-1] =  1;
-    
-            }
-    
-        }
-
-    }
-
-    if (quitarLegandarios === "true") { // quitar legendarios
-        for (let index = 0; index < 3; index++) {
-
-            inventario[index] = 0;
-
-        }
-
-    }
-
-    if (quitarEpicos === "true") { // quitar epicos
-
-        for (let index = 3; index < 10; index++) {
-
-            inventario[index] = 0;
-
-        }
-        
-    }
-
-    if (quitarComunes === "true") { // quitar Comunes
-
-        for (let index = 10; index < cantidad; index++) {
-
-            inventario[index] = 0;
-
-        }
-        
-    }
-
-    for (let t = 0; t < testers.length; t++) {
-            
-        if(testers[t].toLowerCase() == wallet){
-            inventario[cantidad] = 1;
-        }
-    }
-
-    for (let t = 0; t < superUser.length; t++) {
-        if(superUser[t].toLowerCase() == wallet){
-            for (let index = 0; index < cantidad; index++) {
-                inventario[index] = 1;
-            }
-        }
-        
-    }
-
-    //console.log(inventario);
-
-    res.send(inventario.toString());
-});
-
-app.get('/api/v1/formations/:wallet',async(req,res) => {
-
-    var wallet =  req.params.wallet.toLowerCase();
-
-    var result = await contractMarket.methods
-        .largoInventario(wallet)
-        .call({ from: cuenta.address })
-        .catch(err => {console.log(err); return 0})
-  
-    var inventario = [];
-
-    for (let index = 0; index < 4; index++) {
-        inventario[index] = 0;
-    }
-
-    if (!testNet) {
-  
-        for (let index = 0; index < result; index++) {
-
-            var item = await contractMarket.methods
-                .inventario(wallet, index)
-                .call({ from: cuenta.address })
-                .catch(err => {console.log(err); return 0})
-
-
-            if(item.nombre.indexOf("f") === 0){
-
-                inventario[parseInt(item.nombre.slice(item.nombre.indexOf("f")+1,item.nombre.indexOf("-")))-1] =  1;
-
-            }
-
-        }
-    }
-
-    res.send("1,"+inventario.toString());
-});
 
 app.get('/api/v1/inventario/:wallet',async(req,res) => {
 
@@ -566,7 +439,7 @@ app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
         await delay(Math.floor(Math.random() * 12000));
 
-        coins = new BigNumber(req.body.coins).multipliedBy(10**18);
+        coins = new BigNumber(req.body.coins);
 
         if(await monedasAlJuego(coins,wallet,1)){
             res.send("true");
@@ -592,18 +465,23 @@ async function monedasAlJuego(coins,wallet,intentos){
     .call({ from: cuenta.address});
 
     balance = new BigNumber(usuario.balance);
-    balance = balance.shiftedBy(-18);
-    balance = balance.decimalPlaces(8).toNumber();
+    balance = balance.shiftedBy(-18).toNumber();
 
+    console.log("#f1")
     var gases = await web3.eth.getGasPrice(); 
+    console.log("#f1")
 
     var paso = true;
+    console.log("#f2 "+coins.shiftedBy(18).toString()+" "+web3.eth.accounts.wallet[0].address)
 
-    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins.toString(), wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    console.log("#f2")
 
-    if(balance - coins.shiftedBy(-18).toNumber() >= 0 ){
+    if(balance - coins.toNumber() >= 0 ){
+    console.log("#f3")
+
         await contractMarket.methods
-            .gastarCoinsfrom(coins, wallet)
+            .gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet)
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
             .then(result => {
                 console.log("Monedas ENVIADAS en "+intentos+" intentos");
@@ -615,17 +493,17 @@ async function monedasAlJuego(coins,wallet,intentos){
                         var datos = usuario[0];
                         delete datos._id;
                         if(datos.active){
-                            datos.balance = coins.dividedBy(10**18).plus(datos.balance).decimalPlaces(8).toNumber();
-                            datos.ingresado = coins.dividedBy(10**18).plus(datos.ingresado).decimalPlaces(8).toNumber();
+                            datos.balance = coins.shiftedBy(18).plus(datos.balance).toNumber();
+                            datos.ingresado = coins.shiftedBy(18).plus(datos.ingresado).toNumber();
                             datos.deposit.push({
-                                amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                                amount: coins.shiftedBy(18).toNumber(),
                                 date: Date.now(),
                                 finalized: true,
-                                txhash: "FROM MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                                txhash: "FROM MARKET: "+coins.shiftedBy(18).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             })
                             datos.txs.push(explorador+result.transactionHash)
                             update = user.updateOne({ wallet: uc.upperCase(wallet) }, {$set: datos})
-                            .then(console.log("Coins SEND TO GAME: "+coins.dividedBy(10**18)+" # "+wallet))
+                            .then(console.log("Coins SEND TO GAME: "+coins.shiftedBy(18)+" # "+wallet))
                             .catch(console.error())
                             
                         }
@@ -641,13 +519,13 @@ async function monedasAlJuego(coins,wallet,intentos){
                             payAt: Date.now(),
                             checkpoint: 0,
                             reclamado: false,
-                            balance: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
-                            ingresado: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            balance: coins.shiftedBy(18).toNumber(),
+                            ingresado: coins.shiftedBy(18).toNumber(),
                             retirado: 0,
-                            deposit: [{amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            deposit: [{amount: coins.shiftedBy(18).toNumber(),
                                 date: Date.now(),
                                 finalized: true,
-                                txhash: "FROM MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                                txhash: "FROM MARKET: "+coins.shiftedBy(18).toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             }],
                             retiro: [],
                             txs: [explorador+result.transactionHash]
@@ -668,7 +546,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
             .catch(async() => {
                 intentos++;
-                console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos)
+                console.log(coins.shiftedBy(18)+" ->  "+wallet+" : "+intentos)
                 await delay(Math.floor(Math.random() * 12000));
                 paso = await monedasAlJuego(coins,wallet,intentos);
             })
