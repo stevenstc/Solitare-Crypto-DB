@@ -467,18 +467,14 @@ async function monedasAlJuego(coins,wallet,intentos){
     balance = new BigNumber(usuario.balance);
     balance = balance.shiftedBy(-18).toNumber();
 
-    console.log("#f1")
     var gases = await web3.eth.getGasPrice(); 
-    console.log("#f1")
 
     var paso = true;
-    console.log("#f2 "+coins.shiftedBy(18).toString()+" "+web3.eth.accounts.wallet[0].address)
 
     var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
     console.log("#f2")
 
     if(balance - coins.toNumber() >= 0 ){
-    console.log("#f3")
 
         await contractMarket.methods
             .gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet)
@@ -493,17 +489,17 @@ async function monedasAlJuego(coins,wallet,intentos){
                         var datos = usuario[0];
                         delete datos._id;
                         if(datos.active){
-                            datos.balance = coins.shiftedBy(18).plus(datos.balance).toNumber();
-                            datos.ingresado = coins.shiftedBy(18).plus(datos.ingresado).toNumber();
+                            datos.balance = coins.plus(datos.balance).toNumber();
+                            datos.ingresado = coins.plus(datos.ingresado).toNumber();
                             datos.deposit.push({
-                                amount: coins.shiftedBy(18).toNumber(),
+                                amount: coins.toNumber(),
                                 date: Date.now(),
                                 finalized: true,
-                                txhash: "FROM MARKET: "+coins.shiftedBy(18).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                                txhash: "FROM MARKET: "+coins.toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             })
                             datos.txs.push(explorador+result.transactionHash)
                             update = user.updateOne({ wallet: uc.upperCase(wallet) }, {$set: datos})
-                            .then(console.log("Coins SEND TO GAME: "+coins.shiftedBy(18)+" # "+wallet))
+                            .then(console.log("Coins SEND TO GAME: "+coins.toString()+" # "+wallet))
                             .catch(console.error())
                             
                         }
@@ -519,13 +515,13 @@ async function monedasAlJuego(coins,wallet,intentos){
                             payAt: Date.now(),
                             checkpoint: 0,
                             reclamado: false,
-                            balance: coins.shiftedBy(18).toNumber(),
-                            ingresado: coins.shiftedBy(18).toNumber(),
+                            balance: coins.toNumber(),
+                            ingresado: coins.toNumber(),
                             retirado: 0,
-                            deposit: [{amount: coins.shiftedBy(18).toNumber(),
+                            deposit: [{amount: coins.toNumber(),
                                 date: Date.now(),
                                 finalized: true,
-                                txhash: "FROM MARKET: "+coins.shiftedBy(18).toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                                txhash: "FROM MARKET: "+coins.toString()+" # "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                             }],
                             retiro: [],
                             txs: [explorador+result.transactionHash]
@@ -546,7 +542,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
             .catch(async() => {
                 intentos++;
-                console.log(coins.shiftedBy(18)+" ->  "+wallet+" : "+intentos)
+                console.log(coins.toNumber()+" ->  "+wallet+" : "+intentos)
                 await delay(Math.floor(Math.random() * 12000));
                 paso = await monedasAlJuego(coins,wallet,intentos);
             })
@@ -583,7 +579,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
 
-        coins = new BigNumber(req.body.coins).multipliedBy(10**18);
+        coins = new BigNumber(req.body.coins);
 
         var usuario = await user.find({ wallet: uc.upperCase(wallet) });
 
@@ -636,8 +632,12 @@ async function monedasAlMarket(coins,wallet,intentos){
         return false;
     }
 
+    if(usuario[0].username === "" || usuario[0].email === "" || usuario[0].password === ""){
+        return false;
+    }
+
     await contractMarket.methods
-        .asignarCoinsTo(coins, wallet)
+        .asignarCoinsTo(coins.shiftedBy(18), wallet)
         .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
         .then(result => {
 
@@ -650,20 +650,20 @@ async function monedasAlMarket(coins,wallet,intentos){
                     delete datos._id;
                     if(datos.active ){
                         datos.payAt = Date.now();
-                        datos.balance = datos.balance-coins.dividedBy(10**18).toNumber();
-                        datos.retirado = coins.dividedBy(10**18).toNumber()+datos.retirado;
+                        datos.balance = datos.balance-coins.toNumber();
+                        datos.retirado = coins.toNumber()+datos.retirado;
                         datos.retiro.push({
-                            amount: coins.dividedBy(10**18).decimalPlaces(0).toNumber(),
+                            amount: coins.toNumber(),
                             date: Date.now(),
                             finalized: true,
-                            txhash: "TO MARKET: "+coins.dividedBy(10**18).decimalPlaces(0).toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
+                            txhash: "TO MARKET: "+coins.toString()+" # wallet: "+uc.upperCase(wallet)+" # Hash: "+explorador+result.transactionHash
                         })
                         datos.txs.push(explorador+result.transactionHash)
                         
                         user.updateOne({ wallet: uc.upperCase(wallet) }, [
                             {$set:datos}
                         ])
-                        .then(console.log("Coins SEND TO MARKET: "+coins.dividedBy(10**18)+" # "+wallet))
+                        .then(console.log("Coins SEND TO MARKET: "+coins.toString()+" # "+wallet))
                         .catch(console.error())
                     
                     }
@@ -675,7 +675,7 @@ async function monedasAlMarket(coins,wallet,intentos){
                         email: "",
                         password: "",
                         username: "", 
-                        active: true,
+                        active: false,
                         payAt: Date.now(),
                         checkpoint: 0,
                         reclamado: false,
@@ -701,7 +701,7 @@ async function monedasAlMarket(coins,wallet,intentos){
         .catch(async err => {
             console.log(err);
             intentos++;
-            console.log(coins.dividedBy(10**18)+" ->  "+wallet+" : "+intentos)
+            console.log(coins.toString()+" ->  "+wallet+" : "+intentos)
             await delay(Math.floor(Math.random() * 12000));
             paso = await monedasAlMarket(coins,wallet,intentos);
         })
