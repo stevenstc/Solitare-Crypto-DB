@@ -204,6 +204,23 @@ app.get('/api/v1/inventario/:wallet',async(req,res) => {
 
 });
 
+app.get('api/v1/tienecartas/:wallet', async(req,res) => {
+
+    var wallet =  req.params.wallet.toLowerCase();
+    
+    var largoInventario = await contractMarket.methods
+    .largoInventario(wallet)
+    .call({ from: cuenta.address })
+    .catch(err => {console.log(err); return 0})
+
+    if(largoInventario > 1){
+        largoInventario = "true";
+    }else{
+        largoInventario = "false";
+    }
+    res.send(largoInventario)
+})
+
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     let wallet =  req.params.wallet.toLowerCase();
