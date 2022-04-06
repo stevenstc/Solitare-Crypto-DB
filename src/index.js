@@ -204,7 +204,7 @@ app.get('/api/v1/inventario/:wallet',async(req,res) => {
 
 });
 
-app.get('api/v1/tienecartas/:wallet', async(req,res) => {
+app.get('/api/v1/tienecartas/:wallet', async(req,res) => {
 
     var wallet =  req.params.wallet.toLowerCase();
     
