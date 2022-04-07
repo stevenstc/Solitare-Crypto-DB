@@ -57,7 +57,7 @@ if(testNet === "true" ){
 
 const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
 
-const imgDefault = "https://cryptosoccermarket.com/assets/img/default-user-csg.png";
+const imgDefault = "https://solitairecrypto.ml/images/userDefault.png";
 
 let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
@@ -100,7 +100,6 @@ app.get('api/v1/tiempo', async(req,res) => {
 app.get('/api/v1/date',async(req,res) => {
     res.send(parseInt(Date.now()/1000)+"");
 });
-
 
 app.get('/api/v1/inventario/:wallet',async(req,res) => {
 
