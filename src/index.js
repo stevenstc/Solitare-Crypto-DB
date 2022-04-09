@@ -212,7 +212,7 @@ app.get('/api/v1/tienecartas/:wallet', async(req,res) => {
     .call({ from: cuenta.address })
     .catch(err => {console.log(err); return 0})
 
-    if(largoInventario > 1){
+    if(largoInventario >= 1){
         largoInventario = "true";
     }else{
         largoInventario = "false";
