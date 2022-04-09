@@ -601,10 +601,7 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
         usuario = usuario[0];
 
-        console.log(usuario.balance);
-        console.log(usuario.balance-parseInt(req.body.coins))
-
-        if (usuario.balance > 0 && usuario.balance-parseInt(req.body.coins) >= 0) {
+        if (usuario.balance > 0 && usuario.balance-parseFloat(req.body.coins) >= 0) {
             
             await delay(Math.floor(Math.random() * 12000));
 
