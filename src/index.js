@@ -37,14 +37,10 @@ const PEKEY = process.env.APP_PRIVATEKEY;
 const TOKEN = process.env.APP_TOKEN;
 const TOKEN2 = process.env.APP_TOKEN2;
 
-
 const TokenEmail = "nuevo123";
 const uri = process.env.APP_URI;
-
 const TimeToMarket = process.env.APP_TIMEMARKET || 86400 * 1;
-
 const testNet = process.env.APP_TESTNET || "false";
-
 const COMISION = process.env.APP_COMISION || 60000;
 
 var explorador = process.env.APP_EXPLORER || "https://bscscan.com/tx/";
