@@ -100,6 +100,7 @@ app.get('/api/v1/date',async(req,res) => {
 app.get('/api/v1/inventario/:wallet',async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
 
     var wallet =  req.params.wallet.toLowerCase();
 
@@ -204,7 +205,7 @@ app.get('/api/v1/inventario/:wallet',async(req,res) => {
 app.get('/api/v1/tienecartas/:wallet', async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     var wallet =  req.params.wallet.toLowerCase();
     
     var largoInventario = await contractMarket.methods
@@ -223,7 +224,7 @@ app.get('/api/v1/tienecartas/:wallet', async(req,res) => {
 app.get('/api/v1/coins/:wallet',async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     let wallet =  req.params.wallet.toLowerCase();
 
     if(!web3.utils.isAddress(wallet)){
@@ -277,7 +278,7 @@ app.get('/api/v1/coins/:wallet',async(req,res) => {
 app.post('/api/v1/asignar/:wallet',async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     var wallet =  req.params.wallet.toLowerCase();
 
     req.body.coins = req.body.coins.replace(",", ".");
@@ -368,7 +369,7 @@ app.post('/api/v1/asignar/:wallet',async(req,res) => {
 app.post('/api/v1/quitar/:wallet',async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     var wallet =  req.params.wallet.toLowerCase();
 
     req.body.coins = req.body.coins.replace(",", ".");
@@ -456,7 +457,7 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     var wallet =  req.params.wallet.toLowerCase();
 
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
@@ -580,7 +581,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     var wallet =  req.params.wallet.toLowerCase();
 
     if(web3.utils.isAddress(wallet)){
@@ -602,7 +603,7 @@ app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
 app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
     if(!req.params.wallet)res.send("fail");
-
+    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
     var wallet =  req.params.wallet.toLowerCase();
 
     if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
