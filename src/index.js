@@ -216,7 +216,7 @@ app.get('/api/v1/tienecartas/:wallet', async(req,res) => {
     if(largoInventario >= 1){
         largoInventario = "true";
     }else{
-        largoInventario = "false";
+        largoInventario = "true"; // true general revertir pruebas testnet
     }
     res.send(largoInventario)
 })
