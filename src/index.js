@@ -99,8 +99,8 @@ app.get('/api/v1/date',async(req,res) => {
 
 app.get('/api/v1/inventario/:wallet',async(req,res) => {
 
-    if(!req.params.wallet)res.send("fail");
-    if(web3.utils.isAddress(req.params.wallet))res.send("fail");
+    if(!req.params.wallet)return res.send("fail");
+    if(web3.utils.isAddress(req.params.wallet))return res.send("fail");
 
     var wallet =  req.params.wallet.toLowerCase();
 
