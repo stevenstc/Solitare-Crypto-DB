@@ -51,7 +51,7 @@ if(testNet === "true" ){
     RED = process.env.APP_RED || "https://data-seed-prebsc-1-s1.binance.org:8545/";
 }
 
-const addressContract = process.env.APP_CONTRACT || "0xfF7009EF7eF85447F6A5b3f835C81ADd60a321C9";
+const addressContract = process.env.APP_CONTRACT || "0xD9bb599445B160D9606EfDa11c34E009CCee237a";
 
 const imgDefault = "https://solitairecrypto.ml/images/userDefault.png";
 
