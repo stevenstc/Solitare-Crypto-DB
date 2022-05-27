@@ -10,6 +10,7 @@ const BigNumber = require('bignumber.js');
 const uc = require('upper-case');
 
 const abiMarket = require("./abiMarket.js");
+const abiGame = require("./abiGame.js");
 
 //console.log(("HolA Que Haze").toUpperCase())
 //console.log(("HolA Que Haze").toLowerCase())
@@ -52,6 +53,8 @@ if(testNet === "true" ){
 }
 
 const addressContract = process.env.APP_CONTRACT || "0xD9bb599445B160D9606EfDa11c34E009CCee237a";
+const addressGame = process.env.APP_CONTRACTGAME || "0x1F902Dc0d3A7BFdff5a67d7Ed873e7Dc50DC0987";
+
 
 const imgDefault = "https://solitairecrypto.ml/images/userDefault.png";
 
@@ -59,6 +62,8 @@ let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
 
 const contractMarket = new web3.eth.Contract(abiMarket,addressContract);
+const contractGame = new web3.eth.Contract(abiGame,addressGame);
+
 
 web3.eth.accounts.wallet.add(PEKEY);
 
@@ -485,7 +490,7 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     await delay(Math.floor(Math.random() * 12000));
 
-    var usuario = await contractMarket.methods
+    var usuario = await contractGame.methods
     .investors(wallet)
     .call({ from: cuenta.address});
 
@@ -496,12 +501,12 @@ async function monedasAlJuego(coins,wallet,intentos){
 
     var paso = true;
 
-    var gasLimit = await contractMarket.methods.gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
+    var gasLimit = await contractGame.methods.gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet).estimateGas({from: web3.eth.accounts.wallet[0].address});
     console.log("#f2")
 
     if(balance - coins.toNumber() >= 0 ){
 
-        await contractMarket.methods
+        await contractGame.methods
             .gastarCoinsfrom(coins.shiftedBy(18).toString(), wallet)
             .send({ from: web3.eth.accounts.wallet[0].address, gas: gasLimit, gasPrice: gases })
             .then(result => {
@@ -662,7 +667,7 @@ async function monedasAlMarket(coins,wallet,intentos){
         return false;
     }
 
-    await contractMarket.methods
+    await contractGame.methods
         .asignarCoinsTo(coins.shiftedBy(18), wallet)
         .send({ from: web3.eth.accounts.wallet[0].address, gas: COMISION, gasPrice: gases })
         .then(result => {
