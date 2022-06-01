@@ -56,7 +56,7 @@ const addressContract = process.env.APP_CONTRACT || "0xD9bb599445B160D9606EfDa11
 const addressGame = process.env.APP_CONTRACTGAME || "0x1F902Dc0d3A7BFdff5a67d7Ed873e7Dc50DC0987";
 
 
-const imgDefault = "https://solitairecrypto.ml/images/userDefault.png";
+const imgDefault = "https://solitairecrypto.io/images/userDefault.png";
 
 let web3 = new Web3(RED);
 let cuenta = web3.eth.accounts.privateKeyToAccount(PEKEY); 
@@ -462,8 +462,8 @@ app.post('/api/v1/quitar/:wallet',async(req,res) => {
 app.post('/api/v1/coinsaljuego/:wallet',async(req,res) => {
 
     if(!req.params.wallet)return res.send("fail");
-    if(!web3.utils.isAddress(req.params.wallet))return res.send("fail");
-    var wallet =  req.params.wallet.toLowerCase();
+    if(!web3.utils.isAddress(uc.upperCase(req.params.wallet)))return res.send("fail");
+    var wallet =  uc.upperCase(req.params.wallet);
 
     if(req.body.token == TOKEN  && web3.utils.isAddress(wallet)){
 
@@ -586,8 +586,8 @@ async function monedasAlJuego(coins,wallet,intentos){
 
 app.get('/api/v1/time/coinsalmarket/:wallet',async(req,res)=>{
     if(!req.params.wallet)return res.send("fail");
-    if(!web3.utils.isAddress(req.params.wallet))return res.send("fail");
-    var wallet =  req.params.wallet.toLowerCase();
+    if(!web3.utils.isAddress(uc.upperCase(req.params.wallet)))return res.send("fail");
+    var wallet =  uc.upperCase(req.params.wallet);
 
     if(web3.utils.isAddress(wallet)){
 
@@ -609,9 +609,9 @@ app.post('/api/v1/coinsalmarket/:wallet',async(req,res) => {
 
     if(!req.params.wallet)return res.send("fail");
     if(!web3.utils.isAddress(req.params.wallet))return res.send("fail");
-    var wallet =  req.params.wallet.toLowerCase();
+    var wallet =  uc.upperCase(req.params.wallet);
 
-    if(req.body.token == TOKEN && web3.utils.isAddress(wallet)){
+    if(req.body.token == TOKEN ){
 
         coins = new BigNumber(req.body.coins);
 
